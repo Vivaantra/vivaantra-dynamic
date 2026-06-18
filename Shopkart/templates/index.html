@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Curated Essentials & Deals | Vivaantra{% endblock %}
+
+{% block content %}
+    <section class="max-w-7xl mx-auto px-4 py-10 text-center">
+        <span class="text-xs font-bold uppercase tracking-widest text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-full inline-block mb-4">Handpicked Recommendations</span>
+        <h1 class="font-serif text-4xl md:text-5xl font-medium tracking-tight mb-4 text-emerald-950">
+            The <span class="italic font-normal">Daily Essentials</span> Picks
+        </h1>
+        <p class="text-sm text-stone-600 max-w-xl mx-auto leading-relaxed">
+            We track live marketplace shifts across top networks. Skip the endless searching—get verified maximum discounts right here.
+        </p>
+        {% if user %}
+        <p class="text-sm text-stone-500 max-w-xl mx-auto leading-relaxed mt-4">Welcome back, {{ user.name }}. Your profile is ready and your saved browsing is just one click away.</p>
+        {% endif %}
+    </section>
+
+    <section class="max-w-md mx-auto px-4 mb-12">
+        <div class="relative shadow-sm rounded-2xl">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-stone-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <input type="text" id="productSearch" onkeyup="filterProducts()" placeholder="Search items (e.g., pillow, luggage, wallet, bag, toy, football, book)..." 
+                class="w-full pl-11 pr-4 py-3.5 bg-white border border-stone-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800/20 focus:border-emerald-800 transition-all text-stone-800 placeholder-stone-400">
+        </div>
+    </section>
+
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {% for product in products %}
+        <div class="product-card bg-white rounded-2xl border border-stone-200/80 p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-stone-200/50 relative overflow-hidden group" data-keywords="{{ product.keywords }}">
+            <div>
+                <div class="rounded-xl overflow-hidden bg-white mb-4 aspect-square relative border border-stone-100 flex items-center justify-center p-2">
+                    <img src="{{ product.image_url }}" alt="{{ product.alt }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out">
+                    <span class="absolute top-2 left-2 bg-emerald-950 text-white text-[9px] font-bold tracking-wider uppercase px-2 py-1 rounded shadow-sm">{{ product.badge_text }}</span>
+                </div>
+                <h2 class="font-serif text-lg text-emerald-950 font-bold leading-tight line-clamp-2 mb-1 group-hover:text-emerald-800 transition-colors">{{ product.title }}</h2>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-3">{{ product.subtitle }}</p>
+                <p class="text-stone-500 text-xs leading-relaxed line-clamp-3 mb-4">
+                    {{ product.description }}
+                </p>
+            </div>
+            <div class="mt-auto pt-3 border-t border-stone-100 space-y-2">
+                {% for action in product.actions %}
+                <div class="{{ 'flex items-center justify-between bg-emerald-50 p-3 rounded-xl border border-emerald-100/50' if action.store == 'Digital Copy' else 'flex items-center justify-between bg-stone-50 p-2 rounded-xl border border-stone-100' if action.store == 'Amazon' else 'flex items-center justify-between p-2 rounded-xl border border-stone-100' }}">
+                    <div class="text-left">
+                        <span class="{{ 'text-[10px] font-bold text-emerald-800 block uppercase tracking-wider' if action.store == 'Digital Copy' else 'text-[10px] font-bold text-amber-600 block' if action.store == 'Amazon' else 'text-[10px] font-bold text-blue-600 block' }}">{{ action.store }}</span>
+                        <div class="flex items-baseline gap-1">
+                            <span class="font-extrabold text-stone-900 text-sm">{{ action.price }}</span>
+                            {% if action.original_price %}
+                            <span class="text-[10px] text-stone-400 line-through">{{ action.original_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{{ action.url }}" target="_blank" rel="noopener noreferrer" class="{{ 'bg-emerald-800 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-emerald-900 transition-all text-center shadow-sm' if action.store == 'Digital Copy' else 'bg-emerald-800 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg hover:bg-emerald-900 transition-all text-center shadow-sm' }}">{{ action.button_text }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="emptyState" class="hidden text-center py-16">
+        <span class="text-4xl">🔎</span>
+        <h3 class="font-serif text-xl font-bold text-emerald-950 mt-4">No matching products found</h3>
+        <p class="text-stone-500 text-xs mt-1">Try refining your search vocabulary or look for broad terms like 'pillow', 'bag', 'wallet', 'luggage', 'game', or 'book'.</p>
+    </div>
+
+    <script>
+        function buildActionHtml(action) {
+            const isDigital = action.store === 'Digital Copy';
+            const rowClass = isDigital
+                ? 'flex items-center justify-between bg-emerald-50 p-3 rounded-xl border border-emerald-100/50'
+                : action.store === 'Amazon'
+                    ? 'flex items-center justify-between bg-stone-50 p-2 rounded-xl border border-stone-100'
+                    : 'flex items-center justify-between p-2 rounded-xl border border-stone-100';
+            const labelClass = isDigital
+                ? 'text-[10px] font-bold text-emerald-800 block uppercase tracking-wider'
+                : action.store === 'Amazon'
+                    ? 'text-[10px] font-bold text-amber-600 block'
+                    : 'text-[10px] font-bold text-blue-600 block';
+            const buttonClass = isDigital
+                ? 'bg-emerald-800 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-emerald-900 transition-all text-center shadow-sm'
+                : 'bg-emerald-800 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg hover:bg-emerald-900 transition-all text-center shadow-sm';
+            const priceLine = action.original_price ? `
+                        <span class="text-[10px] text-stone-400 line-through">${action.original_price}</span>` : '';
+            return `
+                    <div class="${rowClass}">
+                        <div class="text-left">
+                            <span class="${labelClass}">${action.store}</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="font-extrabold text-stone-900 text-sm">${action.price}</span>${priceLine}
+                            </div>
+                        </div>
+                        <a href="${action.url}" target="_blank" rel="noopener noreferrer" class="${buttonClass}">${action.button_text}</a>
+                    </div>`;
+        }
+
+        function buildProductCardHtml(product) {
+            const actionsHtml = product.actions.map(buildActionHtml).join('');
+            return `
+            <div class="product-card bg-white rounded-2xl border border-stone-200/80 p-4 flex flex-col justify-between hover:shadow-xl hover:shadow-stone-200/50 relative overflow-hidden group" data-keywords="${product.keywords}">
+                <div>
+                    <div class="rounded-xl overflow-hidden bg-white mb-4 aspect-square relative border border-stone-100 flex items-center justify-center p-2">
+                        <img src="${product.image_url}" alt="${product.alt}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out">
+                        <span class="absolute top-2 left-2 bg-emerald-950 text-white text-[9px] font-bold tracking-wider uppercase px-2 py-1 rounded shadow-sm">${product.badge_text}</span>
+                    </div>
+                    <h2 class="font-serif text-lg text-emerald-950 font-bold leading-tight line-clamp-2 mb-1 group-hover:text-emerald-800 transition-colors">${product.title}</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-3">${product.subtitle}</p>
+                    <p class="text-stone-500 text-xs leading-relaxed line-clamp-3 mb-4">
+                        ${product.description}
+                    </p>
+                </div>
+                <div class="mt-auto pt-3 border-t border-stone-100 space-y-2">
+                    ${actionsHtml}
+                </div>
+            </div>`;
+        }
+
+        async function filterProducts() {
+            const input = document.getElementById('productSearch').value.trim();
+            const encoded = encodeURIComponent(input);
+            const response = await fetch('/api/search?q=' + encoded);
+            if (!response.ok) {
+                return;
+            }
+            const products = await response.json();
+            const productGrid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            productGrid.innerHTML = products.map(buildProductCardHtml).join('');
+
+            if (products.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+    </script>
+{% endblock %}

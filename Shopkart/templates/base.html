@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Curated Essentials & Deals | Vivaantra{% endblock %}</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6798581325935966" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .font-serif { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Inter', sans-serif; }
+        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-stone-50 selection:bg-emerald-100 selection:text-emerald-900 antialiased">
+    <nav class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+        <a href="/" class="font-serif text-2xl font-bold text-emerald-950 italic tracking-tight">Vivaantra</a>
+        <div class="space-x-6 text-sm font-medium text-stone-600">
+            <a href="about.html" class="hover:text-emerald-800 transition-colors">About</a>
+            <a href="sessions.html" class="hover:text-emerald-800 transition-colors">Sessions</a>
+            <a href="mavi.html" class="hover:text-emerald-800 transition-colors">Master the Art of Investing</a>
+            <a href="contact.html" class="hover:text-emerald-800 transition-colors">Contact</a>
+            {% if user %}
+                <a href="/profile" class="hover:text-emerald-800 transition-colors">Profile</a>
+                <a href="/logout" class="bg-emerald-800 text-white px-4 py-2 rounded-full hover:bg-emerald-900 transition-all shadow-sm">Logout</a>
+            {% else %}
+                <a href="/login" class="hover:text-emerald-800 transition-colors">Login</a>
+                <a href="/signup" class="bg-emerald-800 text-white px-4 py-2 rounded-full hover:bg-emerald-900 transition-all shadow-sm">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="max-w-[95rem] mx-auto px-4 pb-24">
+        {% block content %}{% endblock %}
+    </main>
+
+    <section class="max-w-4xl mx-auto px-4 pb-16 text-center">
+        <p class="text-[11px] text-stone-400 leading-relaxed max-w-2xl mx-auto">
+            * <strong>Affiliate Disclosure:</strong> Vivaantra evaluates multi-store values for user convenience. Clicking these links maps unique affiliate tracking IDs. If an automated registration event or checkout follows, a small fixed bounty or percentage commission is awarded to Vivaantra at zero additional expense to you.
+        </p>
+    </section>
+
+    <footer class="max-w-7xl mx-auto px-4 py-8 border-t border-stone-200 text-center text-xs text-stone-400">
+        © 2026 Vivaantra. All rights reserved.
+    </footer>
+</body>
+</html>
